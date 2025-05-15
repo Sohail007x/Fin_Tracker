@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Financial Reports{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Financial Reports</h1>
+        <form class="form-inline">
+            <div class="form-group mr-2">
+                <label for="fromDate" class="mr-2">From:</label>
+                <input type="date" class="form-control" id="fromDate" name="from" value="{{ date_from|date:'Y-m-d' }}">
+            </div>
+            <div class="form-group mr-2">
+                <label for="toDate" class="mr-2">To:</label>
+                <input type="date" class="form-control" id="toDate" name="to" value="{{ date_to|date:'Y-m-d' }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </form>
+    </div>
+
+    <div class="row">
+        <!-- Expense Categories Chart -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Expense Categories</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="expensePieChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        {% for category in expense_categories %}
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: {{ category.color }}"></i> {{ category.category }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Income Categories Chart -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Income Sources</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="incomePieChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        {% for category in income_categories %}
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: {{ category.color }}"></i> {{ category.category }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Trend Chart -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Daily Trend ({{ date_from|date:"M d" }} - {{ date_to|date:"M d" }})</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="dailyTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Trend Chart -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Monthly Trend ({{ current_year }})</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="monthlyTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Color palette for charts
+const chartColors = [
+    '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', 
+    '#e74a3b', '#858796', '#5a5c69', '#3a3b45'
+];
+
+// Expense Pie Chart
+const expenseCtx = document.getElementById('expensePieChart').getContext('2d');
+const expenseChart = new Chart(expenseCtx, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for cat in expense_categories %}'{{ cat.category }}',{% endfor %}],
+        datasets: [{
+            data: [{% for cat in expense_categories %}{{ cat.total }},{% endfor %}],
+            backgroundColor: chartColors,
+            hoverBackgroundColor: chartColors.map(c => `${c}cc`),
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+    },
+    options: {
+        maintainAspectRatio: false,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.label || '';
+                        if (label) label += ': ';
+                        label += '$' + context.raw.toFixed(2);
+                        return label;
+                    }
+                }
+            },
+            legend: {
+                display: false
+            }
+        },
+        cutout: '70%',
+    },
+});
+
+// Income Pie Chart
+const incomeCtx = document.getElementById('incomePieChart').getContext('2d');
+const incomeChart = new Chart(incomeCtx, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for cat in income_categories %}'{{ cat.category }}',{% endfor %}],
+        datasets: [{
+            data: [{% for cat in income_categories %}{{ cat.total }},{% endfor %}],
+            backgroundColor: chartColors,
+            hoverBackgroundColor: chartColors.map(c => `${c}cc`),
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+    },
+    options: {
+        maintainAspectRatio: false,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.label || '';
+                        if (label) label += ': ';
+                        label += '$' + context.raw.toFixed(2);
+                        return label;
+                    }
+                }
+            },
+            legend: {
+                display: false
+            }
+        },
+        cutout: '70%',
+    },
+});
+
+// Daily Trend Chart
+const dailyCtx = document.getElementById('dailyTrendChart').getContext('2d');
+const dailyChart = new Chart(dailyCtx, {
+    type: 'line',
+    data: {
+        labels: [{% for day in daily_trend %}'{{ day.date|date:"M d" }}',{% endfor %}],
+        datasets: [
+            {
+                label: "Income",
+                lineTension: 0.3,
+                backgroundColor: "rgba(78, 115, 223, 0.05)",
+                borderColor: "rgba(78, 115, 223, 1)",
+                pointRadius: 3,
+                pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                pointBorderColor: "rgba(78, 115, 223, 1)",
+                pointHoverRadius: 3,
+                pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                pointHitRadius: 10,
+                pointBorderWidth: 2,
+                data: [{% for day in daily_trend %}{% if day.transaction_type == 'Income' %}{{ day.total }},{% endif %}{% endfor %}],
+            },
+            {
+                label: "Expense",
+                lineTension: 0.3,
+                backgroundColor: "rgba(231, 74, 59, 0.05)",
+                borderColor: "rgba(231, 74, 59, 1)",
+                pointRadius: 3,
+                pointBackgroundColor: "rgba(231, 74, 59, 1)",
+                pointBorderColor: "rgba(231, 74, 59, 1)",
+                pointHoverRadius: 3,
+                pointHoverBackgroundColor: "rgba(231, 74, 59, 1)",
+                pointHoverBorderColor: "rgba(231, 74, 59, 1)",
+                pointHitRadius: 10,
+                pointBorderWidth: 2,
+                data: [{% for day in daily_trend %}{% if day.transaction_type == 'Expense' %}{{ day.total }},{% endif %}{% endfor %}],
+            }
+        ],
+    },
+    options: {
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    maxTicksLimit: 7
+                }
+            },
+            y: {
+                ticks: {
+                    callback: function(value) {
+                        return '$' + value;
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': $' + context.raw.toFixed(2);
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Monthly Trend Chart (AJAX loaded)
+const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+const monthlyChart = new Chart(monthlyCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [
+            {
+                label: "Income",
+                backgroundColor: "#4e73df",
+                hoverBackgroundColor: "#2e59d9",
+                borderColor: "#4e73df",
+                data: [],
+            },
+            {
+                label: "Expense",
+                backgroundColor: "#e74a3b",
+                hoverBackgroundColor: "#e02d1b",
+                borderColor: "#e74a3b",
+                data: [],
+            }
+        ],
+    },
+    options: {
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                stacked: false,
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                stacked: false,
+                ticks: {
+                    callback: function(value) {
+                        return '$' + value;
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': $' + context.raw.toFixed(2);
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Load monthly data via AJAX
+fetch('/finance/chart-data/?type=monthly-trend')
+    .then(response => response.json())
+    .then(data => {
+        monthlyChart.data.datasets[0].data = data.datasets[0].data;
+        monthlyChart.data.datasets[1].data = data.datasets[1].data;
+        monthlyChart.update();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock title %}
+
+{% block content %}
+<!-- Hero Section with Full Background Image -->
+<section class="hero-section position-relative text-white overflow-hidden" style="min-height: 100vh;">
+    <!-- Background Image Container - Improved Implementation -->
+    <div class="position-absolute top-0 start-0 w-100 h-100">
+        <img src="{% static 'images/image3.png' %}" alt="Financial Planning" 
+             class="w-100 h-100 object-fit-cover"
+             style="object-position: center;">
+        <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50"></div>
+    </div>
+    
+    <!-- Hero Content -->
+    <div class="container position-relative h-100">
+        <div class="row align-items-center h-100 gx-5">
+            <div class="col-lg-6 py-5">
+                <h1 class="display-3 fw-bold mb-4 animate__animated animate__fadeInDown">Take Control of Your Finances</h1>
+                <p class="lead mb-4 fs-4 animate__animated animate__fadeIn animate__delay-1s">
+                    Finance Tracker Pro helps you manage your money, track expenses, and achieve your financial goals with ease.
+                </p>
+                <div class="animate__animated animate__fadeIn animate__delay-2s">
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-2">Get Started</a>
+                    <a href="#features" class="btn btn-outline-light btn-lg">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4">
+        <a href="#features" class="text-white text-decoration-none">
+            <div class="d-flex flex-column align-items-center">
+                <span class="mb-2">Explore Features</span>
+                <i class="fas fa-chevron-down fa-lg animate-bounce"></i>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold display-5">Powerful Features</h2>
+            <p class="text-muted lead fs-4">Everything you need to manage your finances effectively</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Feature 1 -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-scale">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-exchange-alt fa-2x"></i>
+                        </div>
+                        <h4 class="mb-3">Transaction Tracking</h4>
+                        <p class="text-muted">Easily record and categorize all your income and expenses in one place.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-scale">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-chart-bar fa-2x"></i>
+                        </div>
+                        <h4 class="mb-3">Visual Reports</h4>
+                        <p class="text-muted">Get clear insights with beautiful charts and graphs of your financial data.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-scale">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-bullseye fa-2x"></i>
+                        </div>
+                        <h4 class="mb-3">Budget Planning</h4>
+                        <p class="text-muted">Set budgets and get alerts when you're approaching your spending limits.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container py-5 text-center">
+        <h2 class="display-5 fw-bold mb-4">Ready to Transform Your Finances?</h2>
+        <p class="lead mb-5">Join thousands of users who are taking control of their financial future.</p>
+        <a href="{% url 'register' %}" class="btn btn-light btn-lg px-5 py-3 fs-4">Sign Up Free</a>
+    </div>
+</section>
+
+{% include "includes/footer.html" %}
+
+{% endblock %}

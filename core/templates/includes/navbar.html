@@ -1,0 +1,268 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+      <!-- Brand Logo with 3D Text Effect -->
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+          <span class="brand-icon me-2">FT</span>
+          <span class="fw-bold text-3d">Finance Tracker</span>
+      </a>
+      
+      <!-- Mobile Toggle Button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              {% if user.is_authenticated %}
+              <li class="nav-item">
+                  <a class="nav-link active" href="{% url 'dashboard' %}">
+                      <i class="fas fa-home me-1"></i> Dashboard
+                  </a>
+              </li>
+              
+              <!-- Add Transaction Dropdown -->
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle active" href="#" id="transactionDropdown" role="button" data-bs-toggle="dropdown">
+                      <i class="fas fa-plus-circle me-1"></i> Add
+                  </a>
+                  <ul class="dropdown-menu">
+                      <li>
+                          <a class="dropdown-item" href="{% url 'transaction-add' %}">
+                              <i class="fas fa-wallet me-2"></i> New Transaction
+                          </a>
+                      </li>
+                      <li>
+                          <a class="dropdown-item" href="{% url 'goal' %}">
+                              <i class="fas fa-bullseye me-2 active"></i> New Goal
+                          </a>
+                      </li>
+                  </ul>
+              </li>
+              
+              <li class="nav-item">
+                  <a class="nav-link active" href="{% url 'transaction-list' %}">
+                      <i class="fas fa-list me-1"></i> Transactions
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link active" href="">
+                      <i class="fas fa-bullseye me-1"></i> Goals
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link active" href="{% url 'reports' %}">
+                      <i class="fas fa-chart-pie me-1"></i> Reports
+                  </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="{% url 'chart-data' %}">
+                    <i class="fas fa-chart-pie me-1"></i> Reports
+                </a>
+            </li>
+              {% endif %}
+          </ul>
+  
+          <div class="d-flex align-items-center gap-3">
+              <!-- Dark/Light Mode Toggle -->
+              <div class="form-check form-switch mode-toggle">
+                  <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                  <label class="form-check-label" for="darkModeToggle">
+                      <i class="fas fa-sun"></i>
+                      <i class="fas fa-moon"></i>
+                  </label>
+              </div>
+              
+              {% if user.is_authenticated %}
+              <!-- User Dropdown -->
+              <div class="dropdown">
+                  <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                      <i class="fas fa-user-circle me-1"></i>
+                      <span class="d-none d-sm-inline">{{ user.username }}</span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                          <a class="dropdown-item" href="#">
+                              <i class="fas fa-user me-2"></i>Profile
+                          </a>
+                      </li>
+                      <li>
+                          <a class="dropdown-item" href="#">
+                              <i class="fas fa-cog me-2"></i>Settings
+                          </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <form action="{% url 'logout' %}" id="logout-form" method="POST">
+                          {% csrf_token %}
+                          <li>
+                              <a class="dropdown-item" href="#" onclick="document.getElementById('logout-form').submit();">
+                                  <i class="fas fa-sign-out-alt me-2"></i>Logout
+                              </a>
+                          </li>
+                      </form>
+                  </ul>
+              </div>
+              {% else %}
+              <a href="{% url 'register' %}" class="btn btn-light me-2">
+                  <i class="fas fa-user-plus me-1"></i> Register
+              </a>
+              <a href="{% url 'login' %}" class="btn btn-outline-light">
+                  <i class="fas fa-sign-in-alt me-1"></i> Login
+              </a>
+              {% endif %}
+          </div>
+      </div>
+  </div>
+</nav>
+
+<style>
+  /* Custom Brand Icon */
+  .brand-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background-color: #fff;
+      color: #0d6efd;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.9rem;
+  }
+  
+  /* 3D Text Effect */
+  .text-3d {
+      text-shadow: 
+          1px 1px 0 #004a99,
+          2px 2px 0 #003b7a,
+          3px 3px 0 #002c5b;
+      transition: all 0.3s ease;
+  }
+  
+  .text-3d:hover {
+      transform: translateY(-2px);
+      text-shadow: 
+          1px 3px 0 #004a99,
+          2px 4px 0 #003b7a,
+          3px 5px 0 #002c5b;
+  }
+  
+  /* Dark/Light Mode Toggle */
+  .mode-toggle {
+      margin-right: 0.5rem;
+      padding-left: 0;
+      position: relative;
+  }
+  
+  .mode-toggle .form-check-input {
+      width: 3em;
+      height: 1.5em;
+      margin-left: 0;
+      cursor: pointer;
+      background-color: #e9ecef;
+      border-color: #adb5bd;
+  }
+  
+  .mode-toggle .form-check-label {
+      cursor: pointer;
+      color: white;
+      position: absolute;
+      top: 0;
+      pointer-events: none;
+  }
+  
+  .mode-toggle .fa-sun {
+      left: 0.5rem;
+      opacity: 1;
+      transition: opacity 0.3s;
+  }
+  
+  .mode-toggle .fa-moon {
+      right: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+  }
+  
+  .mode-toggle .form-check-input:checked ~ .fa-sun {
+      opacity: 0;
+  }
+  
+  .mode-toggle .form-check-input:checked ~ .fa-moon {
+      opacity: 1;
+  }
+  
+  /* Dark mode styles */
+  body.dark-mode {
+      background-color: #1a1a1a;
+      color: #f8f9fa;
+  }
+  
+  body.dark-mode .navbar {
+      background-color: #0d3b66 !important;
+  }
+  
+  body.dark-mode .card {
+      background-color: #2d2d2d;
+      color: #f8f9fa;
+  }
+  
+  /* Hover effects */
+  .nav-link:hover, .dropdown-item:hover {
+      opacity: 0.9;
+  }
+  
+  /* Active link styling */
+  .navbar-nav .nav-link.active {
+      font-weight: 500;
+  }
+</style>
+
+<script>
+  // Dark/Light Mode Toggle Functionality
+  document.addEventListener('DOMContentLoaded', function() {
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      const body = document.body;
+      
+      // Check for saved user preference or system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const savedMode = localStorage.getItem('darkMode');
+      
+      if (savedMode === 'true' || (savedMode === null && prefersDark)) {
+          enableDarkMode();
+          darkModeToggle.checked = true;
+      }
+      
+      // Toggle dark/light mode
+      darkModeToggle.addEventListener('change', function() {
+          if (this.checked) {
+              enableDarkMode();
+          } else {
+              disableDarkMode();
+          }
+      });
+      
+      function enableDarkMode() {
+          body.classList.add('dark-mode');
+          document.documentElement.setAttribute('data-bs-theme', 'dark');
+          localStorage.setItem('darkMode', 'true');
+      }
+      
+      function disableDarkMode() {
+          body.classList.remove('dark-mode');
+          document.documentElement.setAttribute('data-bs-theme', 'light');
+          localStorage.setItem('darkMode', 'false');
+      }
+      
+      // Watch for system color scheme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+          if (localStorage.getItem('darkMode') === null) {
+              if (e.matches) {
+                  enableDarkMode();
+                  darkModeToggle.checked = true;
+              } else {
+                  disableDarkMode();
+                  darkModeToggle.checked = false;
+              }
+          }
+      });
+  });
+</script>

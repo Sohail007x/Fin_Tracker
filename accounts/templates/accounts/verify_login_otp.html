@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Login OTP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Verify Login OTP</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-center">We've sent an OTP to <strong>{{ email }}</strong>. Please enter it below.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    
+                    <div class="mb-3">
+                        {{ form.otp.label_tag }}
+                        {{ form.otp }}
+                        {% if form.otp.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.otp.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Verify</button>
+                </form>
+                <div class="mt-3 text-center">
+                    <p>Didn't receive OTP? <a href="{% url 'resend_otp' %}">Resend OTP</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
